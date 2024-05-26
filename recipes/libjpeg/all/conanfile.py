@@ -117,6 +117,9 @@ class LibjpegConan(ConanFile):
                     f"""<Import Project="{conantoolchain_props}" /><Import Project="$(VCTargetsPath)\\Microsoft.Cpp.props" />""",
                 )
 
+                # disable whole program optimization in all builds
+                replace_in_file(self, jpeg_vcxproj, "<WholeProgramOptimization>true", "<WholeProgramOptimization>False")
+
                 # Patch settings for a different build type
                 if self.settings.build_type is not "Release":
                     replacements = {
@@ -125,7 +128,6 @@ class LibjpegConan(ConanFile):
                     if self.settings.build_type == "Debug":
                         replacements.update({
                             "<Optimization>Full": "<Optimization>Disabled",
-                            "<WholeProgramOptimization>true": "<WholeProgramOptimization>False",
                             "NDEBUG;": "_DEBUG;",
                         })
                     for key, value in replacements.items():
